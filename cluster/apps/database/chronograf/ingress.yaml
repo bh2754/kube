@@ -1,0 +1,20 @@
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: chronograf
+  namespace: database
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: HOST(`chronograf.${SECRET_DOMAIN}`)
+      kind: Rule
+      middlewares:
+        - name: internal-ipwhitelist
+          namespace: traefik
+      services:
+        - name: chronograf-chronograf
+          port: 80
+  tls:
+    secretName: ${SECRET_CERT}

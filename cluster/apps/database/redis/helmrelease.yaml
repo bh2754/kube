@@ -1,0 +1,182 @@
+--- #
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: redis
+  namespace: database
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: redis-ha
+      version: 4.22.3
+      sourceRef:
+        kind: HelmRepository
+        name: dandydeveloper-charts
+        namespace: flux-system
+      interval: 15m
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 5
+  values:
+    image:
+      repository: redis
+      tag: 7.0.5-alpine3.16
+      pullPolicy: IfNotPresent
+    replicas: 3
+    podManagementPolicy: OrderedReady
+    ro_replicas: ""
+    labels: {}
+    configmap:
+      labels: {}
+    configmapTest:
+      image:
+        repository: koalaman/shellcheck
+        tag: v0.8.0
+      resources: {}
+    serviceAccount:
+      create: true
+      automountToken: false
+    haproxy:
+      enabled: true
+      servicePort: 6379
+      containerPort: 6379
+      replicas: 3
+      image:
+        repository: haproxy
+        tag: 2.6.6
+        pullPolicy: IfNotPresent
+      securityContext:
+        runAsUser: 99
+        fsGroup: 99
+        runAsNonRoot: true
+      containerSecurityContext:
+        runAsNonRoot: true
+        allowPrivilegeEscalation: false
+        seccompProfile:
+          type: RuntimeDefault
+        capabilities:
+          drop:
+            - ALL
+      hardAntiAffinity: true
+      resources:
+        requests:
+          cpu: 15m
+          memory: 105M
+        limits:
+          memory: 122M
+    redis:
+      port: 6379
+      masterGroupName: "redismaster"       # must match ^[\\w-\\.]+$) and can be templated
+      terminationGracePeriodSeconds: 60
+    sentinel:
+      port: 26379
+      auth: false
+      quorum: 2
+    securityContext:
+      runAsUser: 1000
+      fsGroup: 1000
+      runAsNonRoot: true
+    containerSecurityContext:
+      runAsUser: 1000
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      seccompProfile:
+        type: RuntimeDefault
+      capabilities:
+        drop:
+          - ALL
+    hardAntiAffinity: true
+    exporter:
+      enabled: true
+      image: oliver006/redis_exporter
+      tag: v1.43.0
+      pullPolicy: IfNotPresent
+      port: 9121
+      portName: exporter-port
+      scrapePath: /metrics
+
+      # Address/Host for Redis instance. Default: localhost
+      # Exists to circumvent issues with IPv6 dns resolution that occurs on certain environments
+      ##
+      address: localhost
+      serviceMonitor:
+        # When set true then use a ServiceMonitor to configure scraping
+        enabled: true
+        namespace: "monitoring"
+        interval: 30s
+        telemetryPath: /metrics
+    auth: false
+    persistentVolume:
+      enabled: true
+      accessModes:
+        - ReadWriteOnce
+      size: 10Gi
+    prometheusRule:
+      # prometheusRule.enabled -- If true, creates a Prometheus Operator PrometheusRule.
+      enabled: false
+      # prometheusRule.additionalLabels -- Additional labels to be set in metadata.
+      additionalLabels: {}
+      # prometheusRule.namespace -- Namespace which Prometheus is running in.
+      namespace:
+      # prometheusRule.interval -- How often rules in the group are evaluated (falls back to `global.evaluation_interval` if not set).
+      interval: 10s
+      # prometheusRule.rules -- Rules spec template (see https://github.com/prometheus-operator/prometheus-operator/blob/master/Documentation/api.md#rule).
+      rules: []
+        # Example:
+        # - alert: RedisPodDown
+        #   expr: |
+        #     redis_up{job="{{ include "redis-ha.fullname" . }}"} == 0
+        #   for: 5m
+        #   labels:
+        #     severity: critical
+        #   annotations:
+        #     description: Redis pod {{ "{{ $labels.pod }}" }} is down
+        #     summary: Redis pod {{ "{{ $labels.pod }}" }} is down
+
+    extraInitContainers: []
+    #  - name: extraInit
+    #    image: alpine
+    extraContainers: []
+    #  - name: extra
+    #    image: alpine
+    extraVolumes: []
+    #  - name: empty
+    #    emptyDir: {}
+
+    # Labels added here are applied to all created resources
+    extraLabels: {}
+
+    networkPolicy:
+      ## whether NetworkPolicy for Redis StatefulSets should be created
+      ## when enabled, inter-Redis connectivity is created
+      enabled: false
+      annotations: {}
+      labels: {}
+      ## user defines ingress rules that Redis should permit into
+      ## uses the format defined in https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors
+      ingressRules: []
+        # - selectors:
+        #   - namespaceSelector:
+        #       matchLabels:
+        #         name: my-redis-client-namespace
+        #     podSelector:
+        #       matchLabels:
+        #         application: redis-client
+        ## if ports is not defined then it defaults to the ports defined for enabled services (redis, sentinel)
+        #   ports:
+        #     - port: 6379
+        #       protocol: TCP
+        #     - port: 26379
+        #       protocol: TCP
+
+      ## user can define egress rules too, uses the same structure as ingressRules
+      egressRules: []
+
+    splitBrainDetection:
+      interval: 60
+      resources: {}
