@@ -6,3 +6,4 @@ resources:
   - ./hajimari
   - ./reloader
   - ./kopia
+  - ./adguard
