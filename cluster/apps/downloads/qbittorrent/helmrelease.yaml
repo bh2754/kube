@@ -64,6 +64,7 @@ spec:
         enabled: true
         ingressClassName: "nginx"
         annotations:
+          cert-manager.io/cluster-issuer: "letsencrypt-production"
           nginx.ingress.kubernetes.io/whitelist-source-range: 10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
           nginx.ingress.kubernetes.io/configuration-snippet: |-
             proxy_hide_header "x-webkit-csp";
@@ -82,7 +83,7 @@ spec:
         tls:
           - hosts:
               - *host
-            secretName: "${SECRET_CERT}"
+            secretName: "qbittorrent-tls"
 
     podSecurityContext:
       runAsUser: 568
