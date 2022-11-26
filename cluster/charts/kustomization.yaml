@@ -45,3 +45,4 @@ resources:
   - ./gitea.yaml
   - ./netdata.yaml
   - ./tubearchivist.yaml
+  - ./dysnix-charts.yaml
