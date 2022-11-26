@@ -63,3 +63,10 @@ metadata:
   labels:
     routed-gateway: "true"
     goldilocks.fairwinds.com/enabled: "true"
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: default
+  labels:
+    kustomize.toolkit.fluxcd.io/prune: disabled
