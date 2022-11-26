@@ -1,0 +1,58 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: longhorn
+  namespace: longhorn-system
+spec:
+  releaseName: longhorn
+  interval: 5m
+  chart:
+    spec:
+      chart: longhorn
+      version: 1.3.x
+      sourceRef:
+        kind: HelmRepository
+        name: longhorn
+        namespace: flux-system
+      interval: 5m
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    image:
+    service:
+    persistence:
+      defaultClass: true
+      defaultFsType: ext4
+      defaultClassReplicaCount: 3
+      defaultDataLocality: disabled # best-effort otherwise
+      reclaimPolicy: Delete
+      migratable: false
+    csi:
+      attacherReplicaCount: 3
+      provisionerReplicaCount: 3
+      resizerReplicaCount: 3
+      snapshotterReplicaCount: 3
+    defaultSettings:
+      backupTarget: ${LONGHORN_BACKUP}
+      defaultDataPath: /mnt/storage
+      storageMinimalAvailablePercentage: 10
+      defaultReplicaCount: 3
+      defaultLonghornStaticStorageClass: longhorn
+    ingress:
+      enabled: true
+      ingressClassName: "traefik"
+      host: longhorn.${SECRET_DOMAIN}
+      tls: true
+      tlsSecret: ${SECRET_CERT}
+      annotations:
+        traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+        hajimari.io/enable: "true"
+        hajimari.io/icon: "cow"
+        hajimari.io/appName: "longhorn"
+    enablePSP: false
