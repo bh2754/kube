@@ -1,0 +1,85 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: audiobookshelf
+  namespace: media
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 1.1.3
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s-charts
+        namespace: flux-system
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 5
+  dependsOn:
+    - name: ingress-nginx
+      namespace: nginx
+  values:
+    image:
+      repository: ghcr.io/advplyr/audiobookshelf
+      tag: 2.2.5
+      pullPolicy: IfNotPresent
+    env:
+      TZ: ${TZ}
+    service:
+      main:
+        ports:
+          http:
+            port: 80
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: "nginx"
+        annotations:
+          hajimari.io/enable: "true"
+          hajimari.io/icon: "television-box"
+          cert-manager.io/cluster-issuer: "letsencrypt-production"
+        hosts:
+          - host: &host "abs.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - *host
+            secretName: &tls "audiobookshelf-tls"
+    podSecurityContext:
+      runAsUser: 0
+      runAsGroup: 0
+      fsGroup: 0
+      fsGroupChangePolicy: "OnRootMismatch"
+      supplementalGroups:
+        - 100
+    podAnnotations:
+      backup.velero.io/backup-volumes: config,metadata
+    persistence:
+      config:
+        enabled: true
+        mountPath: /config
+        existingClaim: audiobookshelf-config-v1
+      metadata:
+        enabled: true
+        mountPath: /metadata
+        existingClaim: audiobookshelf-metadata-v1
+      media:
+        enabled: true
+        mountPath: /audiobooks
+        type: nfs
+        server: ${NFS_SERVER}
+        path: ${NFS_MEDIA}/audiobooks
+    resources:
+      requests:
+        cpu: 15m
+        memory: 1238M
+      limits:
+        memory: 1781M
