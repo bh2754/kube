@@ -1,0 +1,52 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: adguard1
+  namespace: default
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    kubernetes.io/ingress.class: nginx
+spec:
+  tls:
+    - hosts:
+        - adguard1.${SECRET_DOMAIN}
+      secretName: ${SECRET_CERT}
+  rules:
+    - host: adguard1.${SECRET_DOMAIN}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: adguard1-external
+                port:
+                  number: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: adguard2
+  namespace: default
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    kubernetes.io/ingress.class: nginx
+spec:
+  tls:
+    - hosts:
+        - adguard2.${SECRET_DOMAIN}
+      secretName: ${SECRET_CERT}
+  rules:
+    - host: adguard1.${SECRET_DOMAIN}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: adguard2-external
+                port:
+                  number: 80
