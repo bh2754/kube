@@ -1,0 +1,20 @@
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: readarr-audio
+  namespace: organizers
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: HOST(`audio.${SECRET_DOMAIN}`)
+      kind: Rule
+      middlewares:
+        - name: internal-ipwhitelist
+          namespace: traefik
+      services:
+        - name: readarr-audio
+          port: 80
+  tls:
+    secretName: ${SECRET_CERT}

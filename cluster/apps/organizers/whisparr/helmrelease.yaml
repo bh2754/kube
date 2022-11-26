@@ -1,0 +1,117 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: &app whisparr
+  namespace: organizers
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 1.1.3
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s-charts
+        namespace: flux-system
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 5
+  releaseName: whisparr
+  dependsOn:
+    - name: ingress-nginx
+      namespace: nginx
+    - name: downloads-gateway
+      namespace: vpn
+  values:
+    controller:
+      replicas: 1
+    addons:
+      netshoot:
+        enabled: false
+    env:
+      UMASK: ""
+      TZ: ${TZ}
+    envFrom:
+      - secretRef:
+          name: *app
+    image:
+      pullPolicy: IfNotPresent
+      repository: ghcr.io/onedr0p/whisparr-nightly
+      tag: 0.1.0.53
+    podSecurityContext:
+      runAsGroup: 0
+      runAsUser: 0
+    securityContext:
+      readOnlyRootFilesystem: false
+      runAsNonRoot: false
+    service:
+      main:
+        ports:
+          http:
+            port: 6969
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: "nginx"
+        annotations:
+          auth.home.arpa/enabled: "true"
+          nginx.ingress.kubernetes.io/configuration-snippet: |-
+            proxy_set_header Accept-Encoding "";
+            sub_filter '</head>' '<link rel="stylesheet" type="text/css" href="https://theme-park.${SECRET_PUBLIC_DOMAIN}/css/base/whisparr/aquamarine.css"></head>';
+            sub_filter_once on;
+          hajimari.io/enable: "true"
+          hajimari.io/icon: "television-box"
+        hosts:
+          - host: &host "whisparr.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - secretName: &tls "${SECRET_CERT}"
+            hosts:
+              - *host
+      api:
+        enabled: true
+        ingressClassName: "nginx"
+        annotations:
+          auth.home.arpa/enabled: "true"
+        hosts:
+          - host: *host
+            paths:
+              - path: /api
+                pathType: Prefix
+        tls:
+          - secretName: *tls
+            hosts:
+              - *host
+    persistence:
+      config:
+        enabled: true
+        existingClaim: whisparr-config-v1
+      media:
+        enabled: true
+        type: nfs
+        server: ${NFS_SERVER}
+        path: ${NFS_MEDIA}
+        mountPath: /media
+      download:
+        enabled: true
+        type: nfs
+        server: ${NFS_SERVER}
+        path: ${NFS_DOWNLOAD}
+        mountPath: /download
+    resources:
+      requests:
+        cpu: 10m
+        memory: 164M
+        ephemeral-storage: "2Gi"
+      limits:
+        memory: 212M
+        ephemeral-storage: "4Gi"
+    podAnnotations:
+      backup.velero.io/backup-volumes: config

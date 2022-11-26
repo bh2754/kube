@@ -1,0 +1,117 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: &app qbittorrent
+  namespace: downloads
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 1.1.3
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s-charts
+        namespace: flux-system
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 5
+  dependsOn:
+    - name: downloads-gateway
+      namespace: vpn
+    - name: ingress-nginx
+      namespace: nginx
+  values:
+    hostname: qbittorrent
+    image:
+      repository: ghcr.io/onedr0p/qbittorrent
+      tag: 4.4.5@sha256:6765f8a7709ad446fb761d3dde16f2a2706d118c21e2f191955ba07935e75e29
+      pullPoligy: IfNotPresent
+    env:
+      TZ: "${TZ}"
+      QBITTORRENT__PORT: &port 8080
+      QBITTORRENT__BT_PORT: &port-bt 50413
+
+    service:
+      main:
+        ports:
+          http:
+            port: *port
+      bittorrent:
+        enabled: true
+        type: LoadBalancer
+        loadBalancerIP: "${METALLB_QBITTORRENT_ADDR}"
+        externalIPs:
+          - "${METALLB_QBITTORRENT_ADDR}"
+        ports:
+          bittorrent:
+            enabled: true
+            port: *port-bt
+            protocol: TCP
+            targetPort: *port-bt
+        externalTrafficPolicy: Local
+
+    podAnnotations:
+      setGateway: "true"
+      backup.velero.io/backup-volumes: config
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: "nginx"
+        annotations:
+          nginx.ingress.kubernetes.io/whitelist-source-range: 10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
+          nginx.ingress.kubernetes.io/configuration-snippet: |-
+            proxy_hide_header "x-webkit-csp";
+            proxy_hide_header "content-security-policy";
+            proxy_hide_header "X-Frame-Options";
+            proxy_set_header Accept-Encoding "";
+            sub_filter '</head>' '<link rel="stylesheet" type="text/css" href="https://theme-park.${SECRET_DOMAIN}/css/base/qbittorrent/hotline.css"></head>';
+            sub_filter_once on;
+          hajimari.io/enable: "true"
+          hajimari.io/icon: "cloud-download"
+        hosts:
+          - host: &host "qbittorrent.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - *host
+            secretName: "${SECRET_CERT}"
+
+    podSecurityContext:
+      runAsUser: 568
+      runAsGroup: 568
+      fsGroup: 568
+      fsGroupChangePolicy: "OnRootMismatch"
+
+    persistence:
+      config:
+        enabled: true
+        existingClaim: qbittorrent-config-v1
+        mountPath: /config
+      media:
+        enabled: true
+        type: nfs
+        server: "${NFS_SERVER}"
+        path: "${NFS_MEDIA}"
+        mountPath: /media
+      download:
+        enabled: true
+        type: nfs
+        server: "${NFS_SERVER}"
+        path: "${NFS_DOWNLOAD}"
+        mountPath: /download
+    resources:
+      requests:
+        cpu: 10m
+        memory: 53M
+        ephemeral-storage: "2Gi"
+      limits:
+        memory: 53M
+        ephemeral-storage: "4Gi"

@@ -1,0 +1,84 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: &app prowlarr
+  namespace: organizers
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: prowlarr
+      version: 4.5.2
+      sourceRef:
+        kind: HelmRepository
+        name: k8s-at-home
+        namespace: flux-system
+      interval: 5m
+  dependsOn:
+    - name: ingress-nginx
+      namespace: nginx
+    - name: downloads-gateway
+      namespace: vpn
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 5
+  values:
+    addons:
+      netshoot:
+        enabled: false
+    image:
+      repository: ghcr.io/onedr0p/prowlarr-nightly
+      tag: 0.4.10.2096@sha256:e7ecc889994ccf989ec49bdd278f758e378f420e4a8d74ce5f6ce9d63f454440
+    env:
+      TZ: "${TZ}"
+    envFrom:
+      - secretRef:
+          name: *app
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: "nginx"
+        annotations:
+          auth.home.arpa/enabled: "true"
+          nginx.ingress.kubernetes.io/configuration-snippet: |
+            proxy_set_header Accept-Encoding "";
+            sub_filter '</head>' '<link rel="stylesheet" type="text/css" href="https://theme-park.${SECRET_PUBLIC_DOMAIN}/css/base/prowlarr/hotline.css"></head>';
+            sub_filter_once on;
+          hajimari.io/enable: "true"
+          hajimari.io/icon: "radar"
+        hosts:
+          - host: &host "prowlarr.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - *host
+            secretName: ${SECRET_CERT}
+    metrics:
+      enabled: false
+    podSecurityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+      fsGroup: 1000
+      fsGroupChangePolicy: "OnRootMismatch"
+    persistence:
+      config:
+        enabled: true
+        existingClaim: prowlarr-config-v1
+    podAnnotations:
+      secret.reloader.stakater.com/reload: *app
+      backup.velero.io/backup-volumes: config
+    resources:
+      requests:
+        ephemeral-storage: "2Gi"
+        cpu: 10m
+        memory: 204M
+      limits:
+        ephemeral-storage: "4Gi"
+        memory: 264M

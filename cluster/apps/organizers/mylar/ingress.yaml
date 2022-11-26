@@ -1,0 +1,23 @@
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: mylar
+  namespace: organizers
+  annotations:
+    hajimari.io/enable: "true"
+    hajimari.io/icon: music
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: HOST(`mylar.${SECRET_DOMAIN}`)
+      kind: Rule
+      middlewares:
+        - name: internal-ipwhitelist
+          namespace: traefik
+      services:
+        - name: mylar
+          port: 8090
+  tls:
+    secretName: ${SECRET_CERT}

@@ -1,0 +1,19 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: readarr-audio-config-v1
+  namespace: organizers
+  labels:
+    app.kubernetes.io/name: &name readarr-audio
+    app.kubernetes.io/instance: *name
+    snapshot.home.arpa/enabled: "true"
+spec:
+  accessModes:
+    - ReadWriteOnce
+
+  resources:
+    requests:
+      storage: 10Gi
+
+  storageClassName: longhorn

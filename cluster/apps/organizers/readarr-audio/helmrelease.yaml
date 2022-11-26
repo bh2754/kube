@@ -1,0 +1,102 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: &app readarr-audio
+  namespace: organizers
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 1.1.3
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s-charts
+        namespace: flux-system
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 5
+  dependsOn:
+    - name: ingress-nginx
+      namespace: nginx
+    - name: downloads-gateway
+      namespace: vpn
+  values:
+    image:
+      repository: ghcr.io/onedr0p/readarr-nightly
+      tag: 0.1.1.1494@sha256:3ba99f36f714472868190a61dc94337a87119bc7e8c3ba92667b61fdc1cad672
+
+    env:
+      TZ: "${TZ}"
+      READARR__INSTANCE_NAME: Readarr
+      READARR__PORT: &port 80
+      READARR__LOG_LEVEL: info
+    envFrom:
+      - secretRef:
+          name: *app
+    service:
+      main:
+        ports:
+          http:
+            port: *port
+
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: "nginx"
+        annotations:
+          auth.home.arpa/enabled: "true"
+          hajimari.io/enable: "true"
+          hajimari.io/icon: "book-open-page-variant"
+          nginx.ingress.kubernetes.io/configuration-snippet: |
+            proxy_set_header Accept-Encoding "";
+            sub_filter '</head>' '<link rel="stylesheet" type="text/css" href="https://theme-park.${SECRET_PUBLIC_DOMAIN}/css/base/readarr/hotline.css"></head>';
+            sub_filter_once on;
+        hosts:
+          - host: &host "audio.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - *host
+            secretName: ${SECRET_CERT}
+    podSecurityContext:
+      runAsUser: 568
+      runAsGroup: 568
+      fsGroup: 568
+      fsGroupChangePolicy: "OnRootMismatch"
+      supplementalGroups:
+        - 100
+
+    persistence:
+      config:
+        enabled: true
+        existingClaim: readarr-audio-config-v1
+      books:
+        enabled: true
+        type: nfs
+        server: &nas "${NFS_SERVER}"
+        path: ${NFS_MEDIA}/audiobooks
+        mountPath: /audiobooks
+      downloads:
+        enabled: true
+        type: nfs
+        server: *nas
+        path: ${NFS_DOWNLOAD}
+        mountPath: /downloads
+    podAnnotations:
+      backup.velero.io/backup-volumes: config
+    resources:
+      requests:
+        cpu: 10m
+        memory: 512M
+        ephemeral-storage: "2Gi"
+      limits:
+        memory: 1904M
+        ephemeral-storage: "4Gi"

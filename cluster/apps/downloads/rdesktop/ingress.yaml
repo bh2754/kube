@@ -1,0 +1,17 @@
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: rdesktop
+  namespace: downloads
+spec:
+  entryPoints:
+    - rdp
+  routes:
+    - match: HostSNI(`*`)
+      middlewares:
+        - name: internal-ipwhitelist
+          namespace: traefik
+      services:
+        - name: rdesktop
+          port: 3389

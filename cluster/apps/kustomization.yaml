@@ -8,3 +8,6 @@ resources:
   - ./networking
   # - system-upgrade
   - ./media
+  - ./vpn
+  - ./downloads
+  - ./organizers
