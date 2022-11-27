@@ -1,0 +1,30 @@
+# yamllint disable
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: minio-nfs
+  namespace: minio
+spec:
+  storageClassName: nfs-client
+  capacity:
+    storage: 1Mi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    server: "${NFS_SERVER}"
+    path: "/volume1/kubernetes-nfs"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: minio-nfs
+  namespace: minio
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: nfs-client
+  resources:
+    requests:
+      storage: 1Mi

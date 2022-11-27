@@ -12,3 +12,4 @@ resources:
   - ./downloads
   - ./organizers
   - ./database
+  - ./storage

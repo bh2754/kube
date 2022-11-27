@@ -1,0 +1,33 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: nfs-subdir-external-provisioner
+  namespace: nfs
+spec:
+  interval: 5m
+  chart:
+    spec:
+      # renovate: registryUrl=https://k8s-at-home.com/charts/
+      chart: nfs-subdir-external-provisioner
+      version: 4.x.x
+      sourceRef:
+        kind: HelmRepository
+        name: nfs
+        namespace: flux-system
+      interval: 1m
+  install:
+    createNamespace: true
+  upgrade:
+    remediation:
+      retries: 5
+  values:
+    image:
+      repository: gcr.io/k8s-staging-sig-storage/nfs-subdir-external-provisioner
+      tag: v4.0.2
+      pullPolicy: IfNotPresent
+    nfs:
+      server: "${NFS_SERVER}"
+      path: "/volume1/kubernetes-nfs"
+    storageClass:
+      defaultClass: false
