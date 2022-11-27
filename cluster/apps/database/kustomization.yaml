@@ -5,7 +5,7 @@ resources:
   - ./mariadb
   - ./postgresql
   - ./redis
-# - ./cloudnative-pg
+  - ./cloudnative-pg
   - ./influxdb
 # - ./chronograf
 # - ./pgadmin
