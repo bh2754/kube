@@ -5,6 +5,7 @@ metadata:
   name: influxdb
   namespace: database
 spec:
+  tls.secretName: "influxdb-tls"
   interval: 5m
   chart:
     spec:
