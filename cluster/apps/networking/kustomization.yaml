@@ -8,3 +8,6 @@ resources:
   - ./metallb
   - ./k8s-gateway
   - ./kyverno
+  - ./theme-park
+  - ./portainer
+# - ./wireguard
