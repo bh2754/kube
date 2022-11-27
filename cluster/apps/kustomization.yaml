@@ -15,3 +15,4 @@ resources:
   - ./storage
   - ./automation
   - ./monitoring
+  - ./security
