@@ -138,3 +138,12 @@ metadata:
   name: goldilocks
   labels:
     kustomize.toolkit.fluxcd.io/prune: disabled
+
+---
+# Source: portainer/templates/namespace.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: portainer
+  labels:
+    goldilocks.fairwinds.com/enabled: "true"

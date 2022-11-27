@@ -1,0 +1,72 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: &app portainer
+  namespace: portainer
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: portainer
+      version: 1.0.38
+      sourceRef:
+        kind: HelmRepository
+        name: portainer
+        namespace: flux-system
+      interval: 5m
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 5
+  dependsOn:
+    - name: ingress-nginx
+      namespace: nginx
+  values:
+    replicaCount: 1
+    image:
+      repository: portainer/portainer-ce
+      tag: 2.16.2
+      pullPolicy: IfNotPresent
+    imagePullSecrets: []
+    serviceAccount:
+      annotations: {}
+      name: portainer-sa-clusteradmin
+    service:
+      type: ClusterIP
+      httpPort: 9000
+      httpNodePort:
+      edgePort: 8000
+      edgeNodePort:
+    ingress:
+      enabled: true
+      ingressClassName: "nginx"
+      annotations:
+        hajimari.io/enable: "true"
+        hajimari.io/icon: "chart-box"
+        nginx.ingress.kubernetes.io/whitelist-source-range: 10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
+        nginx.ingress.kubernetes.io/configuration-snippet: |-
+          proxy_set_header Accept-Encoding "";
+          sub_filter '</head>' '<link rel="stylesheet" type="text/css" href="https://theme-park.${SECRET_DOMAIN}/css/base/portainer/power.css"></head>';
+          sub_filter_once on;
+      hosts:
+        - host: &host "portainer.${SECRET_DOMAIN}"
+          paths:
+            - path: /
+              pathType: Prefix
+      tls:
+        - hosts:
+            - *host
+          secretName: ${SECRET_CERT}
+    resources: {}
+    persistence:
+      data:
+        enabled: true
+        size: "10Gi"
+        annotations:
+          backup.velero.io/backup-volumes: data
+        existingClaim: portainer
+        mountPath: /data
