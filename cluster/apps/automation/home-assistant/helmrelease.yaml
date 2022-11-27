@@ -104,7 +104,7 @@ spec:
           tls:
             - hosts:
                 - *host
-              secretName: ${SECRET_CERT}
+              secretName: hasscode-tls
         resources:
           requests:
             cpu: 22m
