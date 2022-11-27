@@ -1,0 +1,299 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: kube-prometheus-stack
+  namespace: monitoring
+spec:
+  interval: 15m
+  maxHistory: 2
+  timeout: 20m
+  chart:
+    spec:
+      chart: kube-prometheus-stack
+      version: 42.0.3
+      sourceRef:
+        kind: HelmRepository
+        name: prometheus-community-charts
+        namespace: flux-system
+      interval: 15m
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 5
+
+  values:
+    alertmanager:
+      config:
+        global:
+          resolve_timeout: 5m
+        receivers:
+          - name: "null"
+          - name: "discord"
+            slack_configs:
+              - channel: "#prometheus"
+                icon_url: https://avatars3.githubusercontent.com/u/3380462
+                username: "Prometheus"
+                send_resolved: true
+                title: |-
+                  [{{ .Status | toUpper }}{{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{ end }}] {{ if ne .CommonAnnotations.summary ""}}{{ .CommonAnnotations.summary }} {{ else if ne .CommonAnnotations.message ""}}{{ .CommonAnnotations.message }} {{ else if ne .CommonAnnotations.description ""}}{{ .CommonAnnotations.description }} {{ else }}{{ .CommonLabels.alertname }}{{ end }}
+                text: >-
+                  {{ range .Alerts -}}
+                    *Alert:* {{ .Annotations.title }}{{ if .Labels.severity }} - `{{ .Labels.severity }}`{{ end }}
+                  {{ if ne .Annotations.summary ""}}*Summary:* {{ .Annotations.summary }} {{ else if ne .Annotations.message ""}}*Message:* {{ .Annotations.message }} {{ else if ne .Annotations.description ""}}*Description:* {{ .Annotations.description }}{{ end }}
+                  *Details:*
+                    {{ range .Labels.SortedPairs }} • *{{ .Name }}:* `{{ .Value }}`
+                    {{ end }}
+                  {{ end }}
+        route:
+          group_by: ["alertname", "job"]
+          group_wait: 30s
+          group_interval: 5m
+          repeat_interval: 6h
+          receiver: "discord"
+          routes:
+            - receiver: "null"
+              matchers:
+                - alertname =~ "InfoInhibitor|Watchdog"
+            - receiver: "discord"
+              match_re:
+                # severity: critical|warning
+                severity: critical
+              continue: true
+
+        inhibit_rules:
+          - source_match:
+              severity: "critical"
+            target_match:
+              severity: "warning"
+            equal: ["alertname", "namespace"]
+
+      ingress:
+        enabled: true
+        ingressClassName: nginx
+        annotations:
+          cert-manager.io/cluster-issuer: "letsencrypt-production"
+          hajimari.io/enable: "true"
+          hajimari.io/icon: bell-alert
+          hajimari.io/appName: Alertmanager
+        pathType: Prefix
+        hosts:
+          - &host_alertmanager alertmanager.${SECRET_DOMAIN}
+        tls:
+          - hosts:
+              - *host_alertmanager
+            secretName: "alertmanager-tls"
+
+      alertmanagerSpec:
+        replicas: 3
+        podAntiAffinity: hard
+        storage:
+          volumeClaimTemplate:
+            spec:
+              storageClassName: longhorn
+              resources:
+                requests:
+                  storage: 1Gi
+
+      resources:
+        requests:
+          cpu: 10m
+          memory: 50M
+        limits:
+          memory: 99M
+
+    fullnameOverride: prometheus
+    coreDns:
+      enabled: true
+
+    kubeApiServer:
+      enabled: true
+
+    kubeControllerManager:
+      enabled: false # FIXME
+
+    kubeEtcd:
+      enabled: true
+
+    kubelet:
+      enabled: true
+      serviceMonitor:
+        metricRelabelings:
+          - action: replace
+            sourceLabels:
+              - node
+            targetLabel: instance
+
+    kubeProxy:
+      enabled: false # FIXME
+
+    kubeScheduler:
+      enabled: false # FIXME
+
+    kubeStateMetrics:
+      enabled: true
+
+    prometheusOperator:
+      resources:
+        requests:
+          cpu: 35m
+          memory: 273M
+        # limits:
+        # memory: 326M
+
+      prometheusConfigReloader:
+        resources:
+          requests:
+            cpu: 11m
+            memory: 24M
+          # limits:
+          # memory: 32M
+
+    grafana:
+      enabled: false
+      forceDeployDashboards: true
+      sidecar:
+        dashboards:
+          multicluster:
+            global:
+              enabled: true
+
+    kube-state-metrics:
+      metricLabelsAllowlist:
+        - "persistentvolumeclaims=[*]"
+      prometheus:
+        monitor:
+          enabled: true
+          relabelings:
+            - action: replace
+              regex: (.*)
+              replacement: $1
+              sourceLabels:
+                - __meta_kubernetes_pod_node_name
+              targetLabel: kubernetes_node
+
+    nodeExporter:
+      enabled: true
+      serviceMonitor:
+        relabelings:
+          - action: replace
+            regex: (.*)
+            replacement: $1
+            sourceLabels:
+              - __meta_kubernetes_pod_node_name
+            targetLabel: kubernetes_node
+
+    prometheus-node-exporter:
+      fullnameOverride: node-exporter
+      extraArgs:
+        - --collector.filesystem.ignored-mount-points=^/(dev|proc|sys|var)($|/)
+        - --collector.filesystem.ignored-fs-types=^(autofs|binfmt_misc|bpf|cgroup2?|configfs|debugfs|devpts|devtmpfs|fusectl|hugetlbfs|iso9660|mqueue|nsfs|overlay|proc|procfs|pstore|rpc_pipefs|securityfs|selinuxfs|squashfs|sysfs|tracefs|tmpfs)$
+      prometheus:
+        monitor:
+          enabled: true
+          relabelings:
+            - action: replace
+              regex: (.*)
+              replacement: $1
+              sourceLabels:
+                - __meta_kubernetes_pod_node_name
+              targetLabel: kubernetes_node
+
+      resources:
+        requests:
+          cpu: 23m
+          memory: 64M
+        # limits:
+        #   memory: 64M
+      tolerations:
+        - effect: "NoExecute"
+          operator: "Exists"
+        - effect: "NoSchedule"
+          operator: "Exists"
+
+    prometheus:
+      ingress:
+        enabled: true
+        pathType: Prefix
+        ingressClassName: "nginx"
+        annotations:
+          cert-manager.io/cluster-issuer: "letsencrypt-production"
+          hajimari.io/enable: "true"
+          hajimari.io/icon: database-clock
+          hajimari.io/appName: Prometheus
+        hosts:
+          - &host prometheus.${SECRET_DOMAIN}
+        tls:
+          - hosts:
+              - *host
+            secretName: "prometheus-tls"
+
+      thanosService:
+        enabled: true
+      thanosServiceMonitor:
+        enabled: true
+
+      prometheusSpec:
+        replicas: 1
+        replicaExternalLabelName: __replica__
+        ruleSelectorNilUsesHelmValues: false
+        serviceMonitorSelectorNilUsesHelmValues: false
+        podMonitorSelectorNilUsesHelmValues: false
+        probeSelectorNilUsesHelmValues: false
+        retentionSize: "8GB"
+        retention: 14d
+        enableAdminAPI: true
+        walCompression: true
+        storageSpec:
+          volumeClaimTemplate:
+            spec:
+              storageClassName: longhorn
+              resources:
+                requests:
+                  storage: 10Gi
+        resources:
+          requests:
+            cpu: 350m
+            memory: 4744M
+            # limits:
+            # memory: 4744M
+        thanos:
+          image: quay.io/thanos/thanos:v0.29.0
+          # renovate: datasource=docker depName=quay.io/thanos/thanos
+          version: v0.29.0
+          objectStorageConfig:
+            name: &secret thanos-objstore-secret
+            key: objstore.yml
+
+        podAnnotations:
+          secret.reloader.stakater.com/reload: *secret
+
+        additionalScrapeConfigs:
+          - job_name: minio
+            scrape_interval: 1m
+            scrape_timeout: 10s
+            honor_timestamps: true
+            metrics_path: /minio/v2/metrics/cluster
+            scheme: http
+            static_configs:
+              - targets:
+                  - minio.minio.svc.cluster.local:9000"
+          - job_name: sabnzbd-exporter
+            honor_timestamps: true
+            scrape_interval: 5s
+            scrape_timeout: 5s
+            metrics_path: /metrics
+            scheme: http
+            follow_redirects: true
+            static_configs:
+              - targets:
+                  - sabnzbd-exporter.monitoring.svc:9387
+  valuesFrom:
+    - kind: Secret
+      name: discord-webhook
+      valuesKey: ALERT_MANAGER_DISCORD_WEBHOOK
+      targetPath: alertmanager.config.global.slack_api_url
+      optional: false
