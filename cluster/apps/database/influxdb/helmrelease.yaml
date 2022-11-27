@@ -5,7 +5,6 @@ metadata:
   name: influxdb
   namespace: database
 spec:
-  tls.secretName: "influxdb-tls"
   interval: 5m
   chart:
     spec:
@@ -129,8 +128,8 @@ spec:
     ingress:
       enabled: true
       ingressClassName: "nginx"
-      tls:
-        secretName: "influx-tls"
+      tls: true
+      secretName: "influx-tls"
       hostname: influxdb.bharris.xyz
       className: null
       annotations:
