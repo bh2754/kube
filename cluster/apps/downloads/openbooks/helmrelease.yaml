@@ -42,6 +42,7 @@ spec:
         annotations:
           cert-manager.io/cluster-issuer: "letsencrypt-production"
           hajimari.io/enable: "true"
+          hajimari.io/icon: "mdiBookOpenOutline"
         hosts:
           - host: &host openbooks.${SECRET_DOMAIN}
             paths:
