@@ -1,0 +1,43 @@
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: haas
+  namespace: home-automation
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: HOST(`haas.${SECRET_DOMAIN}`)
+      kind: Rule
+      middlewares:
+        - name: internal-ipwhitelist
+          namespace: traefik
+      services:
+        - name: home-assistant
+          port: 8123
+          scheme: http
+  tls:
+    secretName: ${SECRET_CERT}
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: haas-code
+  namespace: home-automation
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: HOST(`haas-code.${SECRET_DOMAIN}`)
+      kind: Rule
+      middlewares:
+        - name: internal-ipwhitelist
+          namespace: traefik
+      services:
+        - name: home-assistant-codeserver
+          port: 12321
+          scheme: http
+  tls:
+    secretName: ${SECRET_CERT}

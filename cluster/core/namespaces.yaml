@@ -116,3 +116,10 @@ metadata:
   name: nfs-csi
   labels:
     goldilocks.fairwinds.com/enabled: "true"
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: home-automation
+  labels:
+    goldilocks.fairwinds.com/enabled: "true"
