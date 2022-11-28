@@ -51,13 +51,15 @@ spec:
         ingressClassName: "nginx"
         annotations:
           cert-manager.io/cluster-issuer: "letsencrypt-production"
+          auth.home.arpa/enabled: "true"
+          external-dns.home.arpa/enabled: "true"
+          external-dns/is-public: "true"
           nginx.ingress.kubernetes.io/configuration-snippet: |
             proxy_set_header Accept-Encoding "";
             sub_filter '</head>' '<link rel="stylesheet" type="text/css" href="https://theme-park.${SECRET_DOMAIN}/css/base/readarr/hotline.css"></head>';
             sub_filter_once on;
           hajimari.io/enable: "true"
           hajimari.io/icon: "book-open-page-variant"
-          auth.home.arpa/enabled: "true"
 
         hosts:
           - host: &host "{{ .Release.Name }}.${SECRET_DOMAIN}"
