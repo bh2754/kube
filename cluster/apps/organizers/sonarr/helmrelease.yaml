@@ -53,6 +53,8 @@ spec:
         annotations:
           cert-manager.io/cluster-issuer: "letsencrypt-production"
           auth.home.arpa/enabled: "true"
+          external-dns.home.arpa/enabled: true
+          external-dns/is-public: true
           hajimari.io/enable: "true"
           hajimari.io/icon: "television-box"
           nginx.ingress.kubernetes.io/configuration-snippet: |
