@@ -16,4 +16,4 @@ resources:
   - ./automation
   - ./monitoring
   - ./security
-# - ./cloudflared
+  - ./cloudflared

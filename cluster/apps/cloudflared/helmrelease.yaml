@@ -25,7 +25,6 @@ spec:
   values:
     global:
       nameOverride: *app
-    originCertSecret: cloudflare-tunnel-origin-cert
     image:
       repository: cloudflare/cloudflared
       tag: 2022.11.0-amd64
@@ -55,6 +54,9 @@ spec:
             readOnly: true
           - path: default.yaml
             mountPath: /etc/cloudflared/default.yaml
+            readOnly: true
+          - path: cert.pem
+            mountPath: /etc/cloudflared/cert.pem
             readOnly: true
     resources:
       requests:
