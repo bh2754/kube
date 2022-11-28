@@ -198,6 +198,9 @@ spec:
       annotations:
         nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
         cert-manager.io/cluster-issuer: "letsencrypt-production"
+        auth.home.arpa/enabled: "true"
+        external-dns.home.arpa/enabled: "true"
+        external-dns/is-public: "true"
       hosts:
         - &host dashboard.${SECRET_DOMAIN}
       tls:

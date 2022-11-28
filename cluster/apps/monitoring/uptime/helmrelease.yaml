@@ -49,6 +49,9 @@ spec:
           cert-manager.io/cluster-issuer: "letsencrypt-production"
           hajimari.io/enable: "true"
           hajimari.io/icon: robot
+          auth.home.arpa/enabled: "true"
+          external-dns.home.arpa/enabled: "true"
+          external-dns/is-public: "true"
         hosts:
           - host: &host "status.${SECRET_DOMAIN}"
             paths:
