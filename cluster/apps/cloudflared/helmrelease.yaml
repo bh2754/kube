@@ -25,6 +25,7 @@ spec:
   values:
     global:
       nameOverride: *app
+    originCertSecret: cloudflare-tunnel-origin-cert
     image:
       repository: cloudflare/cloudflared
       tag: 2022.11.0-amd64
