@@ -45,6 +45,9 @@ spec:
           hajimari.io/enable: "true"
           hajimari.io/icon: "movie-search"
           cert-manager.io/cluster-issuer: "letsencrypt-production"
+          auth.home.arpa/enabled: "true"
+          external-dns.home.arpa/enabled: "true"
+          external-dns/is-public: "true"
         hosts:
           - host: &host "ombi.${SECRET_DOMAIN}"
             paths:
