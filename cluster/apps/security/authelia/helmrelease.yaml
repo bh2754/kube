@@ -15,7 +15,6 @@ spec:
         kind: HelmRepository
         name: bjw-s-charts
         namespace: flux-system
-
   values:
     controller:
       replicas: 3
