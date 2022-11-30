@@ -70,19 +70,19 @@ spec:
           params:
             nodeResourceUtilizationThresholds:
               thresholds:
-                "cpu": 10
-                "memory": 10
+                "cpu": 20
+                "memory": 20
               targetThresholds:
-                "cpu": 35
-                "memory": 35
+                "cpu": 50
+                "memory": 50
 
         RemoveFailedPods:
           enabled: true
           params:
             failedPods:
-              # reasons:
-              #   - OutOfcpu
-              #   - CreateContainerConfigError
+              reasons:
+                - OutOfcpu
+                - CreateContainerConfigError
               includingInitContainers: true
               excludeOwnerKinds:
                 - Job
@@ -92,7 +92,7 @@ spec:
           enabled: true
           params:
             podsHavingTooManyRestarts:
-              podRestartThreshold: 10
+              podRestartThreshold: 5
               includingInitContainers: true
 
     resources:
