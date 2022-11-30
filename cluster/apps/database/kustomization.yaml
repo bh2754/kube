@@ -8,5 +8,5 @@ resources:
   - ./cloudnative-pg
   - ./influxdb
 # - ./chronograf
-# - ./pgadmin
+  - ./pgadmin
   - ./redis-sent
