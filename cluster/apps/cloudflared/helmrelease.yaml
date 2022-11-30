@@ -28,6 +28,7 @@ spec:
     image:
       repository: cloudflare/cloudflared
       tag: 2022.11.0-amd64
+    replicaCount: 3
     args:
       - tunnel
       - --config
