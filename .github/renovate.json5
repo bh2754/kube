@@ -6,7 +6,7 @@
   "suppressNotifications": ["prIgnoreNotification"],
   "rebaseWhen": "conflicted",
   "schedule": [
-    "every weekday"
+    "every weekday",
     "every weekend"
    ],
   "pre-commit": {
