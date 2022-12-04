@@ -7,13 +7,13 @@ resources:
   - ./kube-system
   - ./networking
   # - system-upgrade
-  - ./media
-  - ./vpn
-  - ./downloads
-  - ./organizers
-  - ./database
-  - ./storage
-  - ./automation
-  - ./monitoring
-  - ./security
+# - ./media
+# - ./vpn
+# - ./downloads
+# - ./organizers
+# - ./database
+# - ./storage
+# - ./automation
+# - ./monitoring
+# - ./security
   - ./cloudflared
