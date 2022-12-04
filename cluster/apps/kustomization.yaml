@@ -13,7 +13,7 @@ resources:
   - ./organizers
   - ./database
   - ./storage
-# - ./automation
+  - ./automation
 # - ./monitoring
   - ./security
   - ./cloudflared
