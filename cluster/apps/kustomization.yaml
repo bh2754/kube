@@ -12,7 +12,7 @@ resources:
 # - ./downloads
 # - ./organizers
   - ./database
-# - ./storage
+  - ./storage
 # - ./automation
 # - ./monitoring
 # - ./security
