@@ -15,5 +15,5 @@ resources:
   - ./storage
 # - ./automation
 # - ./monitoring
-# - ./security
+  - ./security
   - ./cloudflared
