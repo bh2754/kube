@@ -31,7 +31,7 @@ spec:
       repository: louislam/uptime-kuma
       tag: 1.18.5
       pullPolicy: IfNotPresent
-
+    imagePullSecrets: dockerconfigjson-ghcr
     env:
       TZ: ${TZ}
 
