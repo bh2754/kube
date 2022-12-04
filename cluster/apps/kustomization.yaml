@@ -9,7 +9,7 @@ resources:
   # - system-upgrade
   - ./media
   - ./vpn
-# - ./downloads
+  - ./downloads
 # - ./organizers
   - ./database
   - ./storage
