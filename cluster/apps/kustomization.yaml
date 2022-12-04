@@ -10,7 +10,7 @@ resources:
   - ./media
   - ./vpn
   - ./downloads
-# - ./organizers
+  - ./organizers
   - ./database
   - ./storage
 # - ./automation
