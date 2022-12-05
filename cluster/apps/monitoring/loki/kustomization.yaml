@@ -6,3 +6,4 @@ resources:
   - secret.sops.yaml
   - config-map.yaml
   - helmrelease.yaml
+  - ./dashboard
