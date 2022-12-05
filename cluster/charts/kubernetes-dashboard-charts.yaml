@@ -4,8 +4,6 @@ kind: HelmRepository
 metadata:
   name: kubernetes-dashboard
   namespace: flux-system
-  annotations:
-    grafana_folder: Kubernetes
 spec:
   interval: 30m
   url: https://kubernetes.github.io/dashboard

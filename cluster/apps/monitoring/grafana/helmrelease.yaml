@@ -94,15 +94,15 @@ spec:
             editable: true
             options:
               path: /var/lib/grafana/dashboards/loki
-          - name: "Kubernetes"
+          - name: "Thanos"
             orgId: 1
-            folder: "Kubernetes"
+            folder: "Thanos"
             type: file
             disableDeletion: true
             updateIntervalSeconds: 10
             editable: true
             options:
-              path: /var/lib/grafana/dashboards/kubernetes
+              path: /var/lib/grafana/dashboards/thanos
     datasources:
       datasources.yaml:
         apiVersion: 1
