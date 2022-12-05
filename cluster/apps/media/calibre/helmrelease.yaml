@@ -71,7 +71,7 @@ spec:
         enabled: true
         type: nfs
         server: ${NFS_SERVER}
-        path: /volume1/books/
+        path: ${NFS_BOOKS}
         mountPath: /media
 
     resources:
