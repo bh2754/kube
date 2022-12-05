@@ -94,6 +94,15 @@ spec:
             editable: true
             options:
               path: /var/lib/grafana/dashboards/loki
+          - name: "Kubernetes"
+            orgId: 1
+            folder: "Kubernetes"
+            type: file
+            disableDeletion: true
+            updateIntervalSeconds: 10
+            editable: true
+            options:
+              path: /var/lib/grafana/dashboards/kubernetes
     datasources:
       datasources.yaml:
         apiVersion: 1
