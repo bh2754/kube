@@ -31,6 +31,8 @@ spec:
           - networking
           - downloads
           - monitoring
+          - organizers
+          - security
       name: "Brent"
       showGlobalBookmarks: true
       globalBookmarks:
