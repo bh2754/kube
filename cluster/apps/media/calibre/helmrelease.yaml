@@ -70,8 +70,8 @@ spec:
       media:
         enabled: true
         type: nfs
-        server: "${NFS_SERVER}"
-        path: /volume1/books
+        server: ${NFS_SERVER}
+        path: /volume1/books/
         mountPath: /media
 
     resources:
