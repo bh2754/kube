@@ -46,7 +46,7 @@ spec:
         ingressClassName: "nginx"
         annotations:
         hosts:
-          - host: &host calibre-web.${INGRESS_DOMAIN}
+          - host: &host calibre-web.${SECRET_DOMAIN}
             paths:
               - path: /
         tls:
@@ -57,7 +57,7 @@ spec:
         enabled: true
         ingressClassName: nginx
         hosts:
-          - host: &host_kobo calibre-kobo.${INGRESS_DOMAIN}
+          - host: &host_kobo calibre-kobo.${SECRET_DOMAIN}
             paths:
               - path: /kobo/
         tls:
