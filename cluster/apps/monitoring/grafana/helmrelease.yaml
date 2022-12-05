@@ -85,6 +85,15 @@ spec:
             editable: true
             options:
               path: /var/lib/grafana/dashboards/media
+          - name: "Loki"
+            orgId: 1
+            folder: "Loki"
+            type: file
+            disableDeletion: true
+            updateIntervalSeconds: 10
+            editable: true
+            options:
+              path: /var/lib/grafana/dashboards/loki
     datasources:
       datasources.yaml:
         apiVersion: 1
