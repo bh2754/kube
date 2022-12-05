@@ -1,4 +1,4 @@
----  #
+---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
@@ -71,7 +71,7 @@ spec:
         enabled: true
         type: nfs
         server: "${NFS_SERVER}"
-        path: volume1/books
+        path: /volume1/books
         mountPath: /media
 
     resources:
