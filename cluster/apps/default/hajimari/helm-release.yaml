@@ -33,6 +33,11 @@ spec:
           - monitoring
           - organizers
           - security
+          - media
+          - longhorn-system
+          - home-automation
+          - goldilocks
+          - minio
       name: "Brent"
       showGlobalBookmarks: true
       globalBookmarks:
