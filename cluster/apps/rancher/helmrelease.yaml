@@ -30,8 +30,9 @@ spec:
     ingress:
       ingressClassName: nginx
       annotations:
+        cert-manager.io/cluster-issuer: "letsencrypt-production"
         hajimari.io/enable: "true"
         nginx.ingress.kubernetes.io/whitelist-source-range: 10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
       tls:
-        secretName: ${SECRET_CERT}
+        secretName: "rancher-tls"
     bootstrapPassword: "${SECRET_RANCHER_ADMIN_PASSWORD}"
