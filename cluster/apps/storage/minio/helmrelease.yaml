@@ -74,7 +74,7 @@ spec:
           - hosts:
               - minio-tls
               - minioapi-tls
-            secretName: "${SECRET_CERT}"
+            secretName: "minio-tls"
     podSecurityContext:
       runAsUser: 0
       runAsGroup: 0
