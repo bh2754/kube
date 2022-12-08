@@ -12,7 +12,7 @@ spec:
       version: 1.0.38
       sourceRef:
         kind: HelmRepository
-        name: portainer
+        name: portainer-charts
         namespace: flux-system
       interval: 5m
   install:
@@ -27,14 +27,6 @@ spec:
       namespace: nginx
   values:
     replicaCount: 1
-    image:
-      repository: portainer/portainer-ce
-      tag: 2.16.2
-      pullPolicy: IfNotPresent
-    imagePullSecrets: []
-    serviceAccount:
-      annotations: {}
-      name: portainer-sa-clusteradmin
     service:
       type: ClusterIP
       httpPort: 9000
