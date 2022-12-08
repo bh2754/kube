@@ -9,5 +9,5 @@ resources:
   - ./k8s-gateway
   - ./kyverno
   - ./theme-park
-  - ./portainer
+# - ./portainer
 # - ./wireguard
