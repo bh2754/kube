@@ -5,6 +5,7 @@ resources:
   - ./helmrelease.yaml
 configMapGenerator:
   - name: vector-aggregator-configmap
+    namespace: monitoring
     files:
       - vector.yaml=./config/vector.yaml
 generatorOptions:
