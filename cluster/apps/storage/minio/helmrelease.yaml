@@ -72,8 +72,8 @@ spec:
                   port: 9000
         tls:
           - hosts:
-              - minio-tls
-              - minioapi-tls
+              - *host-console
+              - *host-api
             secretName: "minio-tls"
     podSecurityContext:
       runAsUser: 0
