@@ -6,7 +6,7 @@ metadata:
   name: portainer
   namespace: portainer
   annotations:
-    volume.alpha.kubernetes.io/storage-class: "generic"
+    volume.alpha.kubernetes.io/storage-class: "longhorn"
   labels:
     io.portainer.kubernetes.application.stack: portainer
     app.kubernetes.io/name: portainer
