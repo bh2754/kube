@@ -106,4 +106,4 @@ spec:
         accessMode: ReadWriteOnce
         size: 10Gi
         mountPath: /cache
-        existingClaim: stash-metadata-v1
+        existingClaim: stash-cache-v1
