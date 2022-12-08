@@ -70,7 +70,9 @@ spec:
               - path: /
                 pathType: Prefix
         tls:
-
+          - hosts:
+              - *host
+            secretName: "stash-tls"
 
     # -- Configure persistence settings for the chart under this key.
     # @default -- See values.yaml
