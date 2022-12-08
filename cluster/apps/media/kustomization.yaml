@@ -11,3 +11,4 @@ resources:
 # - ./codeserver
   - ./calibre
   - ./calibre-web
+  - ./stash
