@@ -13,4 +13,4 @@ resources:
   - ./vector
   - ./thanos
   - ./node-problem
-# - ./netdata
+  - ./netdata
