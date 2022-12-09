@@ -24,6 +24,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: opnsense-external
+                name: opnsense
                 port:
                   number: 4443
