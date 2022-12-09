@@ -7,9 +7,9 @@ metadata:
 spec:
   ports:
     - name: http
-      port: 4443
+      port: 443
       protocol: TCP
-      targetPort: 4443
+      targetPort: 443
   clusterIP: None
   type: ClusterIP
 ---
@@ -23,5 +23,5 @@ subsets:
       - ip: 192.168.1.2
     ports:
       - name: http
-        port: 4443
+        port: 443
         protocol: TCP

@@ -26,4 +26,4 @@ spec:
               service:
                 name: opnsense
                 port:
-                  number: 4443
+                  number: 443
