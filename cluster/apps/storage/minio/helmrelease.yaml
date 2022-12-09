@@ -1,4 +1,4 @@
----  #
+---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
@@ -27,7 +27,7 @@ spec:
   values:
     image:
       repository: quay.io/minio/minio
-      tag: RELEASE.2022-11-17T23-20-09Z
+      tag: RELEASE.2022-12-07T00-56-37Z
     env:
       TZ: "${TZ}"
       MINIO_UPDATE: "off"
@@ -44,10 +44,10 @@ spec:
         enabled: true
         ports:
           http:
-            port: 9001
+            port: &port-console 9001
           api:
             enabled: true
-            port: 9000
+            port: &port-api 9000
     ingress:
       main:
         enabled: true
@@ -69,12 +69,32 @@ spec:
               - path: /
                 pathType: Prefix
                 service:
-                  port: 9000
+                  port: *port-console
         tls:
           - hosts:
               - *host-console
-              - *host-api
             secretName: "minio-tls"
+      s3:
+        enabled: true
+        ingressClassName: "nginx"
+        annotations:
+          external-dns.home.arpa/enabled: "true"
+          nginx.ingress.kubernetes.io/proxy-connect-timeout: "300"
+          nginx.ingress.kubernetes.io/proxy-body-size: 5000m
+          nginx.ingress.kubernetes.io/proxy-request-buffering: "off"
+          nginx.ingress.kubernetes.io/configuration-snippet: |
+            chunked_transfer_encoding off;
+        hosts:
+          - host: &host-api "s3.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+                service:
+                  port: *port-api
+        tls:
+          - hosts:
+              - *host-api
+            secretName: s3-minio-tls
     podSecurityContext:
       runAsUser: 0
       runAsGroup: 0
