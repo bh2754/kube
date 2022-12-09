@@ -1,0 +1,29 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: opnsense
+  namespace: default
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-production"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    kubernetes.io/ingress.class: nginx
+    hajimari.io/enable: "true"
+    hajimari.io/icon: "shield-check"
+spec:
+  tls:
+    - hosts:
+        - firewall.${SECRET_DOMAIN}
+      secretName: opnsense-tls
+  rules:
+    - host: firewall.${SECRET_DOMAIN}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: opnsense-external
+                port:
+                  number: 4443

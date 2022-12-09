@@ -8,3 +8,4 @@ resources:
   - ./kopia
   - ./adguard
   - ./gchr.sops.yaml
+  - ./firewall
