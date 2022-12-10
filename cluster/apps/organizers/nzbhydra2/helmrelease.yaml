@@ -23,15 +23,9 @@ spec:
     service:
       main:
         enabled: true
-      proxy:
-        enabled: true
-        primary: false
-        type: ClusterIP
         ports:
-          tinyproxy:
-            enabled: true
-            port: 8888
-            protocol: TCP
+          http:
+            port: 5076
     ingress:
       dashboard:
         enabled: true
