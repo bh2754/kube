@@ -6,3 +6,4 @@ resources:
   - ./config-map.yaml
   - ./helmrelease.yaml
   - ./dashboard
+  - ./service-monitor.yaml
