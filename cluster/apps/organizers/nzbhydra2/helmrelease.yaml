@@ -20,6 +20,18 @@ spec:
     image:
       repository: linuxserver/nzbhydra2
       tag: 4.7.3
+    service:
+      main:
+        enabled: true
+      proxy:
+        enabled: true
+        primary: false
+        type: ClusterIP
+        ports:
+          tinyproxy:
+            enabled: true
+            port: 8888
+            protocol: TCP
     ingress:
       dashboard:
         enabled: true
