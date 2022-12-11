@@ -14,3 +14,4 @@ resources:
   - ./thanos
   - ./node-problem
   - ./netdata
+  - ./elk
