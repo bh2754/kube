@@ -10,3 +10,4 @@ resources:
   - velero
   - prometheus
   - cloudnative-pg
+  - ./eck-operator
