@@ -46,3 +46,4 @@ resources:
   - ./netdata.yaml
   - ./tubearchivist.yaml
   - ./dysnix-charts.yaml
+  - ./elastic-charts.yaml
