@@ -4,4 +4,4 @@ kind: Kustomization
 resources:
   - ./eck-operator
   - ./elasticsearch
-# - ./kibana
+  - ./kibana
