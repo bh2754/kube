@@ -9,7 +9,7 @@ resources:
   - ./uptime
   - ./dashboard
   - ./speedtest
-# - ./loki
+  - ./loki
   - ./vector
   - ./thanos
   - ./node-problem
