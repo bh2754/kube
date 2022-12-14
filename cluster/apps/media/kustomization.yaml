@@ -12,3 +12,4 @@ resources:
   - ./calibre
   - ./calibre-web
   - ./stash
+  - ./plex
