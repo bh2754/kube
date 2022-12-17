@@ -40,7 +40,7 @@ spec:
         enabled: true
         annotations:
           cert-manager.io/cluster-issuer: "letsencrypt-production"
-        # external-dns.home.arpa/enabled: "true"
+          external-dns.home.arpa/enabled: "true"
           nginx.ingress.kubernetes.io/backend-protocol: HTTPS
         ingressClassName: nginx
         hosts:
