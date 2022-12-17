@@ -44,7 +44,7 @@ spec:
         annotations:
           hajimari.io/enable: "true"
           hajimari.io/icon: "books"
-          nginx.ingress.kubernetes.io/whitelist-source-range: 10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
+          cert-manager.io/cluster-issuer: "letsencrypt-production"
         hosts:
           - host: &host "bookstack.${SECRET_DOMAIN}"
             paths:
@@ -53,7 +53,7 @@ spec:
         tls:
           - hosts:
               - *host
-            secretName: ${SECRET_CERT}
+            secretName: "bookstack-tls"
     persistence:
       config:
         enabled: true
