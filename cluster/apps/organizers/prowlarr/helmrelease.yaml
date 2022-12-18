@@ -33,7 +33,7 @@ spec:
         enabled: false
     image:
       repository: ghcr.io/onedr0p/prowlarr-nightly
-      tag: 0.4.11.2114@sha256:4ce1436a3f8ae814d180ade2e4d66e084aa53476d25a1c55980807ed37f72d50
+      tag: 0.4.11.2137@sha256:adc2e40af3f56a7511d271fab8df2c75bd004b887ebacd8a3df15fda88d32138
     env:
       TZ: "${TZ}"
     envFrom:
