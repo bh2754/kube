@@ -15,3 +15,4 @@ resources:
   - ./node-problem
   - ./netdata
   - ./elk
+  - ./kube-cleanup-operator

@@ -47,3 +47,4 @@ resources:
   - ./tubearchivist.yaml
   - ./dysnix-charts.yaml
   - ./elastic-charts.yaml
+  - ./lwolf-charts.yaml
