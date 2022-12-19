@@ -5,4 +5,3 @@ resources:
   - ./secret.sops.yaml
   - ./config-pvc.yaml
   - ./helmrelease.yaml
-  - ./ingress.yaml
