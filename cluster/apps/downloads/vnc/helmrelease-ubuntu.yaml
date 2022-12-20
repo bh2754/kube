@@ -30,6 +30,10 @@ spec:
             enabled: false
             port: 5900
 
+    env:
+      USER: ${VNC_USER}
+      PASSWORD: ${VNC_PASSWORD}
+
     ingress:
       main:
         enabled: true
