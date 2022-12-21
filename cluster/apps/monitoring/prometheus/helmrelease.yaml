@@ -19,9 +19,11 @@ spec:
       interval: 15m
   install:
     createNamespace: true
+    crds: CreateReplace
     remediation:
       retries: 5
   upgrade:
+    crds: CreateReplace
     remediation:
       retries: 5
 
@@ -36,10 +38,22 @@ spec:
       enabled: true
 
     kubeControllerManager:
-      enabled: false
+      enabled: true
+      endpoints:
+        - 10.0.102.51
+        - 10.0.102.52
+        - 10.0.102.53
 
     kubeEtcd:
-      enabled: false
+      enabled: true
+      endpoints:
+        - 10.0.102.51
+        - 10.0.102.52
+        - 10.0.102.53
+      service:
+        enabled: true
+        port: 2381
+        targetPort: 2381
 
     kubelet:
       enabled: true
@@ -51,10 +65,18 @@ spec:
             targetLabel: instance
 
     kubeProxy:
-      enabled: false
+      enabled: true
+      endpoints:
+        - 10.0.102.51
+        - 10.0.102.52
+        - 10.0.102.53
 
     kubeScheduler:
-      enabled: false
+      enabled: true
+      endpoints:
+        - 10.0.102.51
+        - 10.0.102.52
+        - 10.0.102.53
 
     kubeStateMetrics:
       enabled: true
@@ -196,6 +218,20 @@ spec:
 
       thanosServiceMonitor:
         enabled: true
+
+      thanosIngress:
+        enabled: true
+        pathType: Prefix
+        ingressClassName: nginx
+        annotations:
+          nginx.ingress.kubernetes.io/ssl-redirect: "true"
+          nginx.ingress.kubernetes.io/backend-protocol: "GRPC"
+          hajimari.io/enable: "false"
+        hosts:
+          - &host thanos-sidecar.${SECRET_DOMAIN}
+        tls:
+          - hosts:
+              - *host
 
    ###
    ### Alertmanager Values
