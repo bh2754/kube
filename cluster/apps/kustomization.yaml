@@ -7,8 +7,8 @@ resources:
   - ./kube-system
   - ./networking
 # - ./system-upgrade
-# - ./media
-# - ./vpn
+  - ./media
+  - ./vpn
 # - ./downloads
 # - ./organizers
 # - ./database
