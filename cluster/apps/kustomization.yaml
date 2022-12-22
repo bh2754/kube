@@ -6,8 +6,8 @@ resources:
   - ./flux-system
   - ./kube-system
   - ./networking
-  # - system-upgrade
-  - ./media
+# - ./system-upgrade
+# - ./media
 # - ./vpn
 # - ./downloads
 # - ./organizers
