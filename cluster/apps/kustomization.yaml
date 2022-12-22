@@ -8,13 +8,13 @@ resources:
   - ./networking
   # - system-upgrade
   - ./media
-  - ./vpn
-  - ./downloads
-  - ./organizers
+# - ./vpn
+# - ./downloads
+# - ./organizers
 # - ./database
-  - ./storage
-  - ./automation
-  - ./monitoring
-  - ./security
+# - ./storage
+# - ./automation
+# - ./monitoring
+# - ./security
   - ./cloudflared
-  - ./documentation
+# - ./documentation
