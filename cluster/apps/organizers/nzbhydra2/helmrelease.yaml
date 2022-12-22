@@ -19,7 +19,7 @@ spec:
   values:
     image:
       repository: linuxserver/nzbhydra2
-      tag: 4.7.4
+      tag: 4.7.6
     service:
       main:
         enabled: true
