@@ -6,7 +6,7 @@ resources:
 # - ./postgresql
   - ./redis
   - ./cloudnative-pg
-# - ./influxdb
+  - ./influxdb
 # - ./chronograf
   - ./pgadmin
   - ./redis-sent
