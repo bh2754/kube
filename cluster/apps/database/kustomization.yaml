@@ -4,7 +4,7 @@ kind: Kustomization
 resources:
   - ./mariadb
   - ./postgresql
-# - ./redis
+  - ./redis
   - ./cloudnative-pg
   - ./influxdb
 # - ./chronograf
