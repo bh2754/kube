@@ -6,9 +6,9 @@ resources:
   - ./ombi
   - ./komga
   - ./audiobookshelf
-# - ./tdarr
-# - ./webtop
+  - ./tdarr
+  - ./webtop
 # - ./calibre
 # - ./calibre-web
-# - ./stash
+  - ./stash
 # - ./plex
