@@ -9,4 +9,4 @@ resources:
   - ./influxdb
 # - ./chronograf
   - ./pgadmin
-  - ./redis-sent
+# - ./redis-sent
