@@ -7,11 +7,11 @@ resources:
   - ./kube-system
   - ./networking
 # - ./system-upgrade
-  - ./media
+# - ./media
   - ./vpn
   - ./downloads
   - ./organizers
-  - ./database
+# - ./database
   - ./storage
 # - ./automation
 # - ./monitoring
