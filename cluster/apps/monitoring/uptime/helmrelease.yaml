@@ -29,7 +29,7 @@ spec:
   values:
     image:
       repository: louislam/uptime-kuma
-      tag: 1.18.5
+      tag: 1.19.2
       pullPolicy: IfNotPresent
     env:
       TZ: ${TZ}
