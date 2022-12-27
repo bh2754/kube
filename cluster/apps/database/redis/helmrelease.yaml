@@ -48,7 +48,7 @@ spec:
       replicas: 3
       image:
         repository: haproxy
-        tag: 2.7.0
+        tag: 2.7.1
         pullPolicy: IfNotPresent
       securityContext:
         runAsUser: 99
