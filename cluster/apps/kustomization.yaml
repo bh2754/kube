@@ -8,7 +8,7 @@ resources:
   - ./networking
 # - ./system-upgrade
   - ./media
-  - ./vpn
+# - ./vpn
   - ./downloads
   - ./organizers
   - ./database
